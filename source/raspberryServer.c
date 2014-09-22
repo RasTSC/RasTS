@@ -23,7 +23,7 @@
 #define MAX_CLIENT 5
 
 void error_handling(char *message);
-void read_childproc(int sig);
+void ctrl_childproc(int sig);
 
 int main(int argc, char *argv[])
 {
@@ -33,16 +33,15 @@ int main(int argc, char *argv[])
 	pid_t pid;
 	struct sigaction act;
 	socklen_t addr_size;
-	int str_len;
 	int childcnt=0;
 
 	if(argc!=2) {
-		printf("Usage : ./%s <port>\n", argv[0]);
+		printf("Usage : %s <port>\n", argv[0]);
 		exit(1);
 	}
 
 	// signal setting
-	act.sa_handler = read_childproc;
+	act.sa_handler = ctrl_childproc;
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = 0;
 	if(sigaction(SIGCHLD, &act, 0) != 0)
@@ -77,7 +76,7 @@ int main(int argc, char *argv[])
 		else
 			puts("LOG ( New client connected... )");
 
-		if(pid = fork())
+		if((pid = fork()))
 			childcnt++;
 
 		if(pid == -1)
@@ -94,7 +93,7 @@ int main(int argc, char *argv[])
 			int tempSec = getSec();
 			int OESec = tempSec % 2;
 			char buf[BUF_SIZE];
-			memset(buf, NULL, sizeof(buf));
+			memset(buf, 0, sizeof(buf));
 
 			sprintf(buf, "test[ %d ] = 0101010101010101010101010\n", childcnt );
 
@@ -120,7 +119,7 @@ int main(int argc, char *argv[])
 						break;
 					printf("send to client : %s\n", strTemp);
 
-					memset(strTemp, NULL, sizeof(strTemp));
+					memset(strTemp, 0, sizeof(strTemp));
 				}
 			}
 
@@ -135,7 +134,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void read_childproc(int sig)
+void ctrl_childproc(int sig)
 {
 	pid_t pid;
 	int status;
