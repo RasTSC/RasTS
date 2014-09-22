@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 			close(server_sock);
 
 			int tempSec = getSec();
-			int modSec = tempSec % 2;
+			int OESec = tempSec % 2;
 			char buf[BUF_SIZE];
 			memset(buf, NULL, sizeof(buf));
 
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 				int min = getMin();
 				int s = getSec();
 
-				if (s % 2 == modSec && tempSec != s) {
+				if (s % 2 == OESec && tempSec != s) {
 					sprintf(strTemp,
 							"%04d-%02d-%02d %02dhour %02dmin %02dsec\n", y, mon,
 							d, h, min, s);
