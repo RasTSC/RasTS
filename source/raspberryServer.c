@@ -122,7 +122,6 @@ int main(int argc, char *argv[])
 
 					memset(strTemp, NULL, sizeof(strTemp));
 				}
-
 			}
 
 			close(client_sock);
