@@ -22,18 +22,20 @@
 #define BUF_SIZE 1024
 #define MAX_CLIENT 5
 
+int childcnt=0;
+
 void error_handling(char *message);
 void ctrl_childproc(int sig);
 
 int main(int argc, char *argv[])
 {
 	int server_sock, client_sock;
+	char header[2] = {'$', '#'};
 	struct sockaddr_in server_addr, client_addr;
 
 	pid_t pid;
 	struct sigaction act;
 	socklen_t addr_size;
-	int childcnt=0;
 
 	if(argc!=2) {
 		printf("Usage : %s <port>\n", argv[0]);
@@ -95,7 +97,7 @@ int main(int argc, char *argv[])
 			char buf[BUF_SIZE];
 			memset(buf, 0, sizeof(buf));
 
-			sprintf(buf, "test[ %d ] = 0101010101010101010101010\n", childcnt );
+			sprintf(buf, "test[ %d ] = %c0101010101010101010101010\n", childcnt , header[childcnt]);
 
 			while(1)
 			{
@@ -140,6 +142,7 @@ void ctrl_childproc(int sig)
 	int status;
 	pid=waitpid(-1, &status, WNOHANG);
 	printf("LOG ( Removed proc id: %d ) \n", pid);
+	childcnt--;
 }
 
 void error_handling(char *message)
