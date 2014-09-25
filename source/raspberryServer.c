@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 		else
 			puts("LOG ( New client connected... )");
 
-		if((pid = fork()))
+		if((pid = fork()) > 0)
 			childcnt++;
 
 		if(pid == -1)
