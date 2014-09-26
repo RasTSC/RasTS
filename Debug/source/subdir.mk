@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../source/protocol.c \
 ../source/raspberryServer.c 
 
 OBJS += \
+./source/protocol.o \
 ./source/raspberryServer.o 
 
 C_DEPS += \
+./source/protocol.d \
 ./source/raspberryServer.d 
 
 

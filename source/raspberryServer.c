@@ -18,6 +18,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include "Times.h"
+#include "protocol.h"
 
 #define BUF_SIZE 1024
 #define MAX_CLIENT 5
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
 			char buf[BUF_SIZE];
 			memset(buf, 0, sizeof(buf));
 
-			sprintf(buf, "test[ %d ] = %c0101010101010101010101010\n", childcnt , header[childcnt]);
+			sprintf(buf, "%c%d_0123456789\n", header[childcnt], childcnt);
 
 			while(1)
 			{
@@ -111,13 +112,39 @@ int main(int argc, char *argv[])
 				int s = getSec();
 
 				if (s % 2 == OESec && tempSec != s) {
+
+					//////////////////////////////
+					//add checksum byte...
+					char setData[1024] = {0,};
+
+					int index = 1;
+					unsigned char checksum = 0;
+
+					while (index < strlen(buf) - 1) {
+						if (c_state == IDLE) {
+							c_state =
+									(buf[0] == '$' || buf[0] == '#') ?
+											PAYLOAD : IDLE;
+						} else if (c_state == PAYLOAD) {
+							printf(
+									"add buf[%d] = %c, checksum = (%%c)%c, (%%x)%x\n",
+									index, buf[index], checksum, checksum);
+							checksum ^= (buf[index++] & 0xFF);
+						}
+					}
+
+					printf("checksum = %x\n", checksum);
+					////////////////////////////////////////////////////////////////
+
+					sprintf(setData, "%s%c", buf, checksum);
+
 					sprintf(strTemp,
 							"%04d-%02d-%02d %02dhour %02dmin %02dsec\n", y, mon,
 							d, h, min, s);
-					strcat(strTemp, buf);
+					strcat(strTemp, setData);
 					tempSec = s;
 
-					if(write(client_sock, buf, strlen(buf)) < 0)
+					if(write(client_sock, setData, strlen(setData)) < 0)
 						break;
 					printf("send to client : %s\n", strTemp);
 
