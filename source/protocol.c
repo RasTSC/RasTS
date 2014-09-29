@@ -47,12 +47,6 @@ int dataCheck(int readSize, unsigned char *rs232c_buf)
 		}
 	}
 
-	if(c_state == IDLE)
-	{
-		printf("not header '$' | '#'\n");
-		return 0;
-	}
-
 	if(rs232c_buf[index+1] == checksum)
 	{
 		printf("checksum = %x\n", rs232c_buf[index+1]);
